@@ -98,7 +98,14 @@ model.fit(
     epochs=10,
     batch_size=32
 )
+
 # -----------------------------
+# Evaluate model on test set
+# -----------------------------
+test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=1)
+
+print("Test Loss:", test_loss)
+print("Test Accuracy:", test_accuracy)
 # Save model + label encoder
 # -----------------------------
 model.save("pokemon_model.h5")
