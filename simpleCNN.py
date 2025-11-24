@@ -50,12 +50,12 @@ for idx, row in df.iterrows():
     labels.append(row["Type1"])        
     labels.append(row["Type1"])        
 
-    if type(row["Type2"]) is str:
-        images.append(img)
-        images.append(flipped_img)
-        labels.append(row["Type2"])        
-        labels.append(row["Type2"])        
-        print("Adding second type")
+    # if type(row["Type2"]) is str:
+    #     images.append(img)
+    #     images.append(flipped_img)
+    #     labels.append(row["Type2"])        
+    #     labels.append(row["Type2"])        
+    #     print("Adding second type")
 
 
 print("Loaded images:", len(images))
@@ -90,26 +90,23 @@ X_train, X_test, y_train, y_test = train_test_split(
 # -----------------------------
 # Simple CNN model
 # -----------------------------
+base = 64
 model = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(64, (3,3), activation="relu", input_shape=(input_dim,input_dim,4)),
-    tf.keras.layers.Conv2D(64, (3,3), activation="relu"),
-    tf.keras.layers.Conv2D(64, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base, (3,3), activation="relu", input_shape=(input_dim,input_dim,4)),
+    tf.keras.layers.Conv2D(base, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base, (3,3), activation="relu"),
     tf.keras.layers.MaxPooling2D(),
 
-    tf.keras.layers.Conv2D(128, (3,3), activation="relu"),
-    tf.keras.layers.Conv2D(128, (3,3), activation="relu"),
-    tf.keras.layers.Conv2D(128, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base*2, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base*2, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base*2, (3,3), activation="relu"),
     tf.keras.layers.MaxPooling2D(),
 
-    tf.keras.layers.Conv2D(256, (3,3), activation="relu"),
-    tf.keras.layers.Conv2D(256, (3,3), activation="relu"),
-    tf.keras.layers.Conv2D(256, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base*2, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base*2, (3,3), activation="relu"),
+    tf.keras.layers.Conv2D(base*2, (3,3), activation="relu"),
     tf.keras.layers.MaxPooling2D(),
-
-    # tf.keras.layers.Conv2D(512, (3,3), activation="relu"),
-    # tf.keras.layers.Conv2D(512, (3,3), activation="relu"),
-    # tf.keras.layers.Conv2D(512, (3,3), activation="relu"),
-    # tf.keras.layers.MaxPooling2D(),
+    # tf.keras.layers.AveragePooling2D(),
 
 
     tf.keras.layers.Flatten(),
