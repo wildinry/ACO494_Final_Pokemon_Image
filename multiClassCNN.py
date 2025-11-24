@@ -31,7 +31,7 @@ crop_box = (edge_crop, edge_crop, target_dim-edge_crop, target_dim-edge_crop)
 
 # for the multiclass classification encoding
 def get_encoding(lbls):
-    encoding = np.zeros(len(label_set))
+    encoding = np.zeros(18)
     for idx, lbl in enumerate(label_set):
         if (lbl in lbls):
             encoding[idx] = 1
@@ -77,6 +77,8 @@ for idx, row in df.iterrows():
 
 print("Loaded images:", len(images))
 
+print(f"{label_set = }")
+exit()
 # Convert to arrays
 # -----------------------------
 # Label encode types
