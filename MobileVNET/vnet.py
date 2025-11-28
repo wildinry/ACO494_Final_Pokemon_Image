@@ -9,7 +9,7 @@ from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from typing import List, Tuple
-from sys import exit
+from sys import exit, argv
 
 # --- Configuration Constants ---
 IMAGE_SIZE: Tuple[int, int] = (224, 224)
@@ -200,7 +200,7 @@ def train_model(model: Model, train_gen: tf.keras.utils.Sequence, val_gen: tf.ke
 # 4. Evaluation and Plotting (Unchanged)
 # ----------------------------------------------------------------------
 
-def evaluate_model(model_path: str, val_gen: tf.keras.utils.Sequence, classes):
+def evaluate_model(model_path: str, val_gen: tf.keras.utils.Sequence, classes, skip_eval=False):
     """Loads the best model and runs a final accuracy and loss test."""
     print("\n--- 5. Final Model Evaluation ---")
     
@@ -211,13 +211,14 @@ def evaluate_model(model_path: str, val_gen: tf.keras.utils.Sequence, classes):
     model = tf.keras.models.load_model(model_path)
     
     # Evaluate the model on the validation data
-    loss, accuracy = model.evaluate(val_gen, verbose=1)
+    if not skip_eval:
+        loss, accuracy = model.evaluate(val_gen, verbose=1)
+        print(f"\nFinal Validation Loss: {loss:.4f}")
+        print(f"Final Validation Accuracy: {accuracy:.4f}")
 
     plot_evaluation(model, val_gen, classes)
 
 
-    print(f"\nFinal Validation Loss: {loss:.4f}")
-    print(f"Final Validation Accuracy: {accuracy:.4f}")
 
 def plot_evaluation(model: tf.keras.Model, val_gen, class_names):
     """
@@ -349,9 +350,36 @@ def plot_training_history(history: dict, plot_path: str):
 # Main Execution Flow (Unchanged)
 # ----------------------------------------------------------------------
 
+def main_show():
+    """
+    THE main method if the first command line argument is "show"
+
+    ignores getting the actual evaluation. Simply displays the evaluation chart and then exits.
+    """
+    # 1. Prepare DataFrames (Collects all image paths and maps them to types)
+    df_images, classes = create_image_dataframe(CSV_PATH, DATASET_PATH)
+    if df_images is None or not classes:
+        return
+
+    # 2. Create Data Generators
+    train_generator, validation_generator = create_generators(df_images, classes)
+    
+    if train_generator.samples == 0:
+        print("ERROR: Training generator has 0 samples. Cannot proceed with training.")
+        return
+
+    # 3. Plot and evaluate
+    evaluate_model(MODEL_FILENAME, validation_generator, classes, skip_eval=True)
+
+    exit(0)
+
+
+
 def main():
     """Main function to run the entire ML pipeline."""
     setup_environment()
+    if len(argv) > 1 and argv[1].lower() == "show":
+        main_show()
 
     # 1. Prepare DataFrames (Collects all image paths and maps them to types)
     df_images, classes = create_image_dataframe(CSV_PATH, DATASET_PATH)
@@ -366,6 +394,7 @@ def main():
         return
 
     # # 3. Build Model
+    input("You are about to overwrite the model. Press enter to confirm: ")
     model = build_transfer_learning_model(len(classes))
     
     # # 4. Train Model
