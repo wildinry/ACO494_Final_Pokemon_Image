@@ -211,7 +211,7 @@ def evaluate_model(model_path: str, val_gen: tf.keras.utils.Sequence, classes):
     model = tf.keras.models.load_model(model_path)
     
     # Evaluate the model on the validation data
-    # loss, accuracy = model.evaluate(val_gen, verbose=1)
+    loss, accuracy = model.evaluate(val_gen, verbose=1)
 
     plot_evaluation(model, val_gen, classes)
 
@@ -366,10 +366,10 @@ def main():
         return
 
     # # 3. Build Model
-    # model = build_transfer_learning_model(len(classes))
+    model = build_transfer_learning_model(len(classes))
     
     # # 4. Train Model
-    # history = train_model(model, train_generator, validation_generator, MODEL_FILENAME)
+    history = train_model(model, train_generator, validation_generator, MODEL_FILENAME)
     
     # 5. Evaluate Model
     evaluate_model(MODEL_FILENAME, validation_generator, classes)
